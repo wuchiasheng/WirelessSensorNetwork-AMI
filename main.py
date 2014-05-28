@@ -4,20 +4,24 @@ Continuously read the serial port and process IO data received from a remote XBe
 
 from xbee import XBee
 from database import DBConnector
+from encrypt import encrypt_RSA
+from decrypt import decrypt_RSA
+from ConfigParser import SafeConfigParser
 import serial
 import re
 
 #Initialization
-ser = serial.Serial('/dev/ttyUSB1', 38400)#/dev/ could change,so verify in /dev
+ser = serial.Serial('/dev/ttyUSB1', 38400)
 xbee = XBee(ser)
 d = DBConnector()
+parser = SafeConfigParser()
+parser.read('dbconfig.ini')
 
 #Continuously read/parse/store packets
 while True:
     response = xbee.wait_read_frame()
 	dataStr = str(response)
-	print dataStr
-	s2Results=re.findall(r'(<>)(S2) (\w+:)(\w+) (\w+:)(\w+) (\w+):(\w+.\w+) (\w+:)(\w+.\w+)',dataStr)#Extract data from S2 format only
+	s2Results=re.findall(r'(<>)(S2) (\w+:)(\w+) (\w+:)(\w+) (\w+):(\w+.\w+) (\w+:)(\w+.\w+)',dataStr)
     	for result in s2Results:
 		print result[0] #<>
 		print result[1]	#S2
@@ -27,5 +31,5 @@ while True:
 		print result[5]	#val
 		print result[6]	#Temp
 		print result[7] #val
-        d.store(result[5],80,result[6],result[7],result)#Store temperature data in MeshliumDB
+		d.store(result[5],80,result[6],result[7],result) 
 ser.close()

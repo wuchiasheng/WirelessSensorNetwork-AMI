@@ -1,8 +1,7 @@
-"""
- Store data in MeshliumDB database created in local host
-"""
 import MySQLdb
 from ConfigParser import SafeConfigParser
+from encrypt import encrypt_RSA
+from decrypt import decrypt_RSA
 
 class DBConnector:
 	def store(self,id,frameType,sensorType,sensorVal,raw):
@@ -11,7 +10,9 @@ class DBConnector:
 		parser.read('dbconfig.ini')
 		
 		try:
-			conn=MySQLdb.connect(host=parser.get('MeshliumDB','host'),user="root",passwd=parser.get('MeshliumDB','passwd'),db="MeshliumDB")
+			encryptedPasswd = parser.get('MeshliumDB','passwd')
+			decryptedPasswd= decrypt_RSA("xx",encryptedPasswd)
+			conn=MySQLdb.connect(host=parser.get('MeshliumDB','host'),user="root",passwd=decryptedPasswd,db="MeshliumDB")
 			x=conn.cursor()
 			print 'Connected to MySQL'
 			
