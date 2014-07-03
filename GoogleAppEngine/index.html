@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <script type='text/javascript' src='https://www.google.com/jsapi'></script>
+    <script type='text/javascript'>
+      google.load('visualization', '1', {packages:['table']});
+      google.setOnLoadCallback(drawTable);
+      function drawTable() {
+        var data = new google.visualization.DataTable();
+        data.addColumn('string', 'Sensor ID');
+        data.addColumn('string', 'Sensor Name');
+        data.addColumn('string', 'Value');
+		data.addColumn('string', 'Date');
+		{% for sensorData in sensorDatas %}
+		data.addRow(['{{sensorData.sensorID}}','{{sensorData.sensorName}}','{{sensorData.sensorValue}}','{{sensorData.dateTime}}']);
+		{% endfor %}
+		
+        var table = new google.visualization.Table(document.getElementById('table_div'));
+		
+        table.draw(data, {showRowNumber: true});
+		
+      }
+    </script>
+  </head>
+
+  <body>
+    <div id='table_div'></div>
+  </body>
+</html>
